@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AI_Explain_Process__c</fullName>
+    <label>AI: Explain Process</label>
+    <type>Number</type>
+    <precision>4</precision>
+    <scale>1</scale>
+    <required>false</required>
+    <description>AI score for Explain Process (max 10)</description>
+</CustomField>

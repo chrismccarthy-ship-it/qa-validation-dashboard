@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Channel__c</fullName>
+    <label>Channel</label>
+    <type>Picklist</type>
+    <required>false</required>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Voice</fullName><default>false</default><label>Voice</label></value>
+            <value><fullName>Messaging</fullName><default>false</default><label>Messaging</label></value>
+        </valueSetDefinition>
+    </valueSet>
+    <description>Channel type of the interaction</description>
+</CustomField>

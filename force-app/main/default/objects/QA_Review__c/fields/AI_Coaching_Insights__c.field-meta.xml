@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AI_Coaching_Insights__c</fullName>
+    <label>AI Coaching Insights</label>
+    <type>LongTextArea</type>
+    <length>131072</length>
+    <visibleLines>8</visibleLines>
+    <description>AI-generated coaching recommendations based on score analysis</description>
+</CustomField>

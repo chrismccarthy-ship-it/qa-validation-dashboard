@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>QA Validation Dashboard</label>
+    <description>Grants access to QA Review object, fields, and Apex classes for the validation dashboard.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <classAccesses>
+        <apexClass>QAReviewScorePopulator</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>QAValidationDashboardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <objectPermissions>
+        <object>QA_Review__c</object>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+</PermissionSet>

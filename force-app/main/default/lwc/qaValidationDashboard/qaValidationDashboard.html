@@ -1,0 +1,189 @@
+<template>
+    <!-- Loading -->
+    <template if:true={isLoading}>
+        <div class="loading-container">
+            <lightning-spinner alternative-text="Loading dashboard..." size="medium"></lightning-spinner>
+            <p class="loading-text">Loading validation data...</p>
+        </div>
+    </template>
+
+    <!-- Error -->
+    <template if:true={errorMessage}>
+        <div class="error-container">
+            <lightning-icon icon-name="utility:error" size="small" variant="error"></lightning-icon>
+            <span class="error-text">{errorMessage}</span>
+        </div>
+    </template>
+
+    <!-- No Data -->
+    <template if:true={showNoData}>
+        <div class="no-data-container">
+            <lightning-icon icon-name="utility:info" size="large"></lightning-icon>
+            <p class="no-data-text">No QA review data available yet. Create QA Reviews to populate the dashboard.</p>
+        </div>
+    </template>
+
+    <!-- Dashboard -->
+    <template if:true={hasData}>
+        <div class="dashboard-wrapper">
+
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h2 class="header-title">Service Quality — Validation Dashboard</h2>
+                    <p class="header-subtitle">{reviewCount} reviews analyzed</p>
+                </div>
+                <div class="header-right">
+                    <lightning-button-group>
+                        <lightning-button label="Refresh" onclick={handleRefresh} icon-name="utility:refresh"></lightning-button>
+                    </lightning-button-group>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <span class="kpi-label">AI-Human Agreement</span>
+                    <span class={agreementClass}>{agreementRate}%</span>
+                    <span class="kpi-sub">within ±10 points</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Avg Human Score</span>
+                    <span class="kpi-value">{avgHumanScore}</span>
+                    <span class="kpi-sub">out of 100</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Avg AI Score</span>
+                    <span class="kpi-value">{avgAIScore}</span>
+                    <span class="kpi-sub">out of 100</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">Avg Variance</span>
+                    <span class={varianceClass}>{avgVariance}</span>
+                    <span class="kpi-sub">AI - Human delta</span>
+                </div>
+            </div>
+
+            <!-- Category Comparison -->
+            <div class="section">
+                <h3 class="section-title">
+                    <lightning-icon icon-name="utility:chart" size="x-small"></lightning-icon>
+                    Score Comparison by Category
+                </h3>
+                <div class="comparison-bars">
+                    <template for:each={categoryComparison} for:item="cat">
+                        <div key={cat.key} class="comparison-row">
+                            <div class="comp-label-row">
+                                <span class="comp-label">{cat.label}</span>
+                                <span class="comp-scores">
+                                    <span class="human-tag">Human: {cat.humanAvg}</span>
+                                    <span class="ai-tag">AI: {cat.aiAvg}</span>
+                                </span>
+                            </div>
+                            <div class="comp-bars">
+                                <div class="comp-track">
+                                    <div class="comp-fill human-fill" style={cat.humanBarStyle}></div>
+                                </div>
+                                <div class="comp-track">
+                                    <div class="comp-fill ai-fill" style={cat.aiBarStyle}></div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-dot human-dot"></span> Human</span>
+                    <span class="legend-item"><span class="legend-dot ai-dot"></span> AI</span>
+                </div>
+            </div>
+
+            <!-- Agent Leaderboard -->
+            <div class="section">
+                <h3 class="section-title">
+                    <lightning-icon icon-name="utility:people" size="x-small"></lightning-icon>
+                    Agent Performance
+                </h3>
+                <div class="agent-table-wrap">
+                    <table class="agent-table">
+                        <thead>
+                            <tr>
+                                <th class="th-left">Agent</th>
+                                <th>Reviews</th>
+                                <th>Human Avg</th>
+                                <th>AI Avg</th>
+                                <th>Variance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={agentLeaderboard} for:item="agent">
+                                <tr key={agent.name}>
+                                    <td class="td-left td-name">{agent.name}</td>
+                                    <td>{agent.reviewCount}</td>
+                                    <td>{agent.humanAvg}</td>
+                                    <td>{agent.aiAvg}</td>
+                                    <td class={agent.varianceClass}>{agent.variance}</td>
+                                    <td><span class={agent.statusClass}>{agent.status}</span></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Coaching Opportunities -->
+            <div class="section">
+                <h3 class="section-title">
+                    <lightning-icon icon-name="utility:coaching" size="x-small"></lightning-icon>
+                    Coaching Opportunities
+                </h3>
+                <template if:true={hasCoachingOpps}>
+                    <div class="coaching-list">
+                        <template for:each={coachingOpportunities} for:item="opp">
+                            <div key={opp.key} class="coaching-card">
+                                <div class="coaching-header">
+                                    <span class="coaching-agent">{opp.agentName}</span>
+                                    <span class={opp.priorityClass}>{opp.priority}</span>
+                                </div>
+                                <p class="coaching-area">Weakest area: <strong>{opp.weakestCategory}</strong> — scored {opp.weakestScore}/{opp.maxPoints}</p>
+                                <p class="coaching-detail">{opp.detail}</p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <template if:false={hasCoachingOpps}>
+                    <p class="no-coaching">All agents are performing within expected thresholds.</p>
+                </template>
+            </div>
+
+            <!-- AI Calibration Insights -->
+            <div class="section calibration-section">
+                <h3 class="section-title">
+                    <lightning-icon icon-name="utility:einstein" size="x-small"></lightning-icon>
+                    AI Calibration Insights
+                </h3>
+                <div class="calibration-grid">
+                    <div class="cal-card">
+                        <span class="cal-label">Categories where AI scores higher than humans</span>
+                        <template for:each={aiHigherCategories} for:item="cat">
+                            <span key={cat.key} class="cal-pill ai-higher">{cat.label} (+{cat.delta})</span>
+                        </template>
+                        <template if:false={hasAIHigher}>
+                            <span class="cal-none">None</span>
+                        </template>
+                    </div>
+                    <div class="cal-card">
+                        <span class="cal-label">Categories where AI scores lower than humans</span>
+                        <template for:each={aiLowerCategories} for:item="cat">
+                            <span key={cat.key} class="cal-pill ai-lower">{cat.label} ({cat.delta})</span>
+                        </template>
+                        <template if:false={hasAILower}>
+                            <span class="cal-none">None</span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </template>
+</template>

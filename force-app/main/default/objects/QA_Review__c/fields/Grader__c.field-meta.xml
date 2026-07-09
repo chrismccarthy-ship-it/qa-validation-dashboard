@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Grader__c</fullName>
+    <label>Grader</label>
+    <type>Lookup</type>
+    <referenceTo>User</referenceTo>
+    <relationshipName>QA_Reviews_Graded</relationshipName>
+    <relationshipLabel>QA Reviews Graded</relationshipLabel>
+    <required>false</required>
+    <description>The human QA grader who scored this interaction</description>
+</CustomField>
