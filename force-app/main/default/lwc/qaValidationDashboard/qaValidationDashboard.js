@@ -1,4 +1,5 @@
 import { LightningElement, api, wire, track } from 'lwc';
+import { refreshApex } from '@salesforce/apex';
 import getQAReviews from '@salesforce/apex/QAValidationDashboardController.getQAReviews';
 
 const CATEGORIES = [
@@ -16,12 +17,21 @@ export default class QaValidationDashboard extends LightningElement {
     @track reviews = [];
     @track isLoading = true;
     @track errorMessage = null;
+    @track selectedAgent = '';
+    @track startDate = '';
+    @track endDate = '';
+    _allReviews = [];
+
+    _wiredResult;
 
     @wire(getQAReviews)
-    wiredReviews({ data, error }) {
+    wiredReviews(result) {
+        this._wiredResult = result;
+        const { data, error } = result;
         this.isLoading = false;
         if (data) {
-            this.reviews = data;
+            this._allReviews = data;
+            this.applyFilters();
             this.errorMessage = null;
         } else if (error) {
             this.errorMessage = 'Failed to load QA review data: ' + (error.body ? error.body.message : error.message);
@@ -240,9 +250,59 @@ export default class QaValidationDashboard extends LightningElement {
             .sort((a, b) => Math.abs(b.rawDelta) - Math.abs(a.rawDelta));
     }
 
+    // ── Filter Logic ──
+
+    get agentOptions() {
+        const names = [...new Set(this._allReviews.map(r => r.Agent_Name__c).filter(Boolean))].sort();
+        const options = [{ label: 'All agents', value: '' }];
+        names.forEach(n => options.push({ label: n, value: n }));
+        return options;
+    }
+
+    handleAgentChange(event) {
+        this.selectedAgent = event.detail.value;
+        this.applyFilters();
+    }
+
+    handleStartDateChange(event) {
+        this.startDate = event.detail.value;
+        this.applyFilters();
+    }
+
+    handleEndDateChange(event) {
+        this.endDate = event.detail.value;
+        this.applyFilters();
+    }
+
+    handleClearFilters() {
+        this.selectedAgent = '';
+        this.startDate = '';
+        this.endDate = '';
+        this.applyFilters();
+    }
+
+    applyFilters() {
+        let filtered = [...this._allReviews];
+
+        if (this.selectedAgent) {
+            filtered = filtered.filter(r => r.Agent_Name__c === this.selectedAgent);
+        }
+
+        if (this.startDate) {
+            filtered = filtered.filter(r => r.Review_Date__c >= this.startDate);
+        }
+
+        if (this.endDate) {
+            filtered = filtered.filter(r => r.Review_Date__c <= this.endDate);
+        }
+
+        this.reviews = filtered;
+    }
+
     handleRefresh() {
         this.isLoading = true;
-        // Re-trigger the wire by using refreshApex or navigation
-        window.location.reload();
+        refreshApex(this._wiredResult).then(() => {
+            this.isLoading = false;
+        });
     }
 }

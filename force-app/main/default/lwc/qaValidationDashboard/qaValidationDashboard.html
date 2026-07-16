@@ -40,6 +40,41 @@
                 </div>
             </div>
 
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label class="filter-label">Agent</label>
+                    <lightning-combobox
+                        value={selectedAgent}
+                        options={agentOptions}
+                        onchange={handleAgentChange}
+                        placeholder="All agents"
+                        variant="label-hidden"
+                    ></lightning-combobox>
+                </div>
+                <div class="filter-item">
+                    <label class="filter-label">From</label>
+                    <lightning-input
+                        type="date"
+                        value={startDate}
+                        onchange={handleStartDateChange}
+                        variant="label-hidden"
+                    ></lightning-input>
+                </div>
+                <div class="filter-item">
+                    <label class="filter-label">To</label>
+                    <lightning-input
+                        type="date"
+                        value={endDate}
+                        onchange={handleEndDateChange}
+                        variant="label-hidden"
+                    ></lightning-input>
+                </div>
+                <div class="filter-item">
+                    <lightning-button label="Clear filters" onclick={handleClearFilters} variant="base"></lightning-button>
+                </div>
+            </div>
+
             <!-- KPI Cards -->
             <div class="kpi-row">
                 <div class="kpi-card">
