@@ -8,4 +8,9 @@
         <target>lightning__AppPage</target>
         <target>lightning__HomePage</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage">
+            <property name="dashboardTitle" type="String" label="Dashboard Title" default="Service quality — validation dashboard" />
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>

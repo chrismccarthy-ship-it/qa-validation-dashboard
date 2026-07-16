@@ -1,4 +1,5 @@
-import { LightningElement, wire, track } from 'lwc';
+@api dashboardTitle = 'Service quality — validation dashboard';
+import { LightningElement, api, wire, track } from 'lwc';
 import getQAReviews from '@salesforce/apex/QAValidationDashboardController.getQAReviews';
 
 const CATEGORIES = [
