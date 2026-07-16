@@ -1,4 +1,3 @@
-@api dashboardTitle = 'Service quality — validation dashboard';
 import { LightningElement, api, wire, track } from 'lwc';
 import getQAReviews from '@salesforce/apex/QAValidationDashboardController.getQAReviews';
 
@@ -13,6 +12,7 @@ const CATEGORIES = [
 ];
 
 export default class QaValidationDashboard extends LightningElement {
+    @api dashboardTitle = 'Service quality — validation dashboard';
     @track reviews = [];
     @track isLoading = true;
     @track errorMessage = null;
